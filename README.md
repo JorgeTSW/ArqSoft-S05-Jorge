@@ -18,5 +18,5 @@ Escribe manualmente en la barra del navegador:
 - `/Cita/PorPaciente?pacienteId=1` — citas de un paciente específico
 
 ## Requisitos
-- .NET 8.0
+- .NET 10.0
 - Visual Studio 2022
