@@ -6,7 +6,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
+/* ============================================================================
+ * INYECCIÓN DE DEPENDENCIAS — Ports & Adapters
+ * ============================================================================
+ * 
+ * Aquí decidimos qué implementación (Adapter) se usa para cada interfaz (Port).
+ * Cambiando una sola línea, toda la app usa una fuente de datos diferente
+ * sin tocar controllers, vistas ni lógica de negocio.
+ * 
+ * */
+
+// Adapter JSON — lee datos desde archivos en /data
+//builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
+
+// Adapter Memoria — datos hardcodeados en memoria
+builder.Services.AddScoped<IPacienteRepository, MemoriaPacienteRepository>();
+
+// ============================================================================
+
 builder.Services.AddScoped<IMedicoRepository, JsonMedicoRepository>();
 builder.Services.AddScoped<ICitaRepository, JsonCitaRepository>();
 
