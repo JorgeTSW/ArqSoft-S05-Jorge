@@ -17,10 +17,10 @@ builder.Services.AddControllersWithViews();
  * */
 
 // Adapter JSON — lee datos desde archivos en /data
-//builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
+builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
 
 // Adapter Memoria — datos hardcodeados en memoria
-builder.Services.AddScoped<IPacienteRepository, MemoriaPacienteRepository>();
+//builder.Services.AddScoped<IPacienteRepository, MemoriaPacienteRepository>();
 
 // ============================================================================
 
