@@ -1,4 +1,5 @@
-﻿using CitasApp.Interfaces;
+﻿using CitasApp.Domain.Models;
+using CitasApp.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CitasApp.Controllers
