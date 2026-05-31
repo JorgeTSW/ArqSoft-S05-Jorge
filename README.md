@@ -39,6 +39,11 @@ Archivos JSON en `data/` dentro de cada proyecto cliente.
 - `/Cita` — agenda completa
 - `/Cita/PorPaciente?pacienteId=1` — citas de un paciente
 
+## Patrones GOF implementados
+
+- **Factory** (`RepositoryFactory`) — selecciona el repositorio según el entorno (Development → JSON, Production → Memoria)
+- **Decorator** (`LoggingPacienteRepository`) — agrega logging con timestamp sin modificar el repositorio original
+
 ## Requisitos
 - .NET 10.0
 - Visual Studio 2022
