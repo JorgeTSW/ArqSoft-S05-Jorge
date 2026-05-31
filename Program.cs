@@ -1,7 +1,13 @@
+using CitasApp.Application.Services;
 using CitasApp.Domain.Interfaces;
 using CitasApp.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Servicios de aplicación
+builder.Services.AddScoped<PacienteService>();
+builder.Services.AddScoped<MedicoService>();
+builder.Services.AddScoped<CitaService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

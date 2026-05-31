@@ -3,11 +3,17 @@
 App de citas médicas construida con ASP.NET Core MVC (.NET 10).
 
 ## Arquitectura
-Hexagonal (Ports & Adapters) dividida en tres proyectos:
+Hexagonal (Ports & Adapters) dividida en cuatro proyectos:
 
 - **CitasApp.Domain** — modelos e interfaces (sin dependencias externas)
-- **CitasApp.Infrastructure** — repositorios JSON (implementa las interfaces del Domain)
+- **CitasApp.Application** — servicios de aplicación (orquesta el Domain)
+- **CitasApp.Infrastructure** — repositorios JSON y en memoria (implementa las interfaces del Domain)
 - **CitasApp.Web** — controllers, views y configuración (MVC)
+
+## Flujo de dependencias
+```
+Web → Application → Domain ← Infrastructure
+```
 
 ## Entidades
 - **Paciente** — lista y detalle de pacientes registrados
@@ -19,6 +25,8 @@ Archivos JSON en `CitasApp.Web/data/`
 - `pacientes.json`
 - `medicos.json`
 - `citas.json`
+
+También incluye `MemoriaPacienteRepository` para demostrar el swap de adapter.
 
 ## Navegación
 - `/Paciente` — lista de pacientes
@@ -32,4 +40,4 @@ Archivos JSON en `CitasApp.Web/data/`
 
 ## Ramas
 - `main` — estado evaluable con persistencia JSON en un solo proyecto
-- `hexagonal` — refactorización a arquitectura multi-proyecto
+- `hexagonal` — arquitectura hexagonal multi-proyecto con capa de aplicación

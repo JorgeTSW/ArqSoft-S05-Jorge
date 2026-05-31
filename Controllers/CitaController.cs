@@ -1,36 +1,35 @@
-﻿using CitasApp.Domain.Models;
-using CitasApp.Domain.Interfaces;
+﻿using CitasApp.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CitasApp.Controllers
+namespace CitasApp.Web.Controllers
 {
     public class CitaController : Controller
     {
-        private readonly ICitaRepository _citaRepo;
-        private readonly IPacienteRepository _pacienteRepo;
-        private readonly IMedicoRepository _medicoRepo;
+        private readonly CitaService _citaService;
+        private readonly PacienteService _pacienteService;
+        private readonly MedicoService _medicoService;
 
-        public CitaController(ICitaRepository citaRepo,
-                              IPacienteRepository pacienteRepo,
-                              IMedicoRepository medicoRepo)
+        public CitaController(CitaService citaService,
+                              PacienteService pacienteService,
+                              MedicoService medicoService)
         {
-            _citaRepo = citaRepo;
-            _pacienteRepo = pacienteRepo;
-            _medicoRepo = medicoRepo;
+            _citaService = citaService;
+            _pacienteService = pacienteService;
+            _medicoService = medicoService;
         }
 
         public IActionResult Index()
         {
-            ViewBag.Pacientes = _pacienteRepo.ObtenerTodos();
-            ViewBag.Medicos = _medicoRepo.ObtenerTodos();
-            return View(_citaRepo.ObtenerTodos());
+            ViewBag.Pacientes = _pacienteService.ObtenerTodos();
+            ViewBag.Medicos = _medicoService.ObtenerTodos();
+            return View(_citaService.ObtenerTodos());
         }
 
         public IActionResult PorPaciente(int pacienteId)
         {
-            ViewBag.Pacientes = _pacienteRepo.ObtenerTodos();
-            ViewBag.Medicos = _medicoRepo.ObtenerTodos();
-            return View(_citaRepo.ObtenerPorPaciente(pacienteId));
+            ViewBag.Pacientes = _pacienteService.ObtenerTodos();
+            ViewBag.Medicos = _medicoService.ObtenerTodos();
+            return View(_citaService.ObtenerPorPaciente(pacienteId));
         }
     }
 }
