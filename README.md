@@ -32,6 +32,7 @@ Archivos JSON en `data/` dentro de cada proyecto cliente.
 - `GET /api/medicos/{id}` — detalle de un médico
 - `GET /api/citas` — agenda completa
 - `GET /api/citas/porpaciente/{pacienteId}` — citas de un paciente
+- `POST /api/citas/confirmar/{citaId}` — confirma una cita y dispara notificaciones
 
 ## Navegación Web (MVC)
 - `/Paciente` — lista de pacientes
@@ -43,6 +44,7 @@ Archivos JSON en `data/` dentro de cada proyecto cliente.
 
 - **Factory** (`RepositoryFactory`) — selecciona el repositorio según el entorno (Development → JSON, Production → Memoria)
 - **Decorator** (`LoggingPacienteRepository`) — agrega logging con timestamp sin modificar el repositorio original
+- **Observer** (`SmsObserver`, `EmailObserver`) — notifican automáticamente al confirmar una cita sin acoplar CitaService a los canales de notificación
 
 ## Requisitos
 - .NET 10.0
