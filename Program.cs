@@ -1,39 +1,35 @@
 using CitasApp.Application.Services;
 using CitasApp.Domain.Interfaces;
 using CitasApp.Infrastructure.Repositories;
-// 1. ADD THESE NEW INITIAL IMPORTS FOR EF CORE & IDENTITY
-using CitasApp.Infrastructure.Data; // Replace with your actual namespace where CitasDbContext lives
+using CitasApp.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load the .env file variables into the application context
+var appEnv = builder.Configuration["APP_ENVIRONMENT"]?.ToLower() ?? "dev";
 
 // Servicios de aplicación
 builder.Services.AddScoped<PacienteService>();
 builder.Services.AddScoped<MedicoService>();
 builder.Services.AddScoped<CitaService>();
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 /* ============================================================================
- * NEW: DATABASES & IDENTITY INFRASTRUCTURE (PostgreSQL Setup)
+ * DATABASES & IDENTITY INFRASTRUCTURE (PostgreSQL Setup)
  * ============================================================================ */
-// Extract the connection string from your appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Register your DbContext to use Npgsql (PostgreSQL)
 builder.Services.AddDbContext<CitasDbContext>(options =>
     options.UseNpgsql(
         connectionString,
-        b => b.MigrationsAssembly("CitasApp.Infrastructure") // Points migrations to the Infrastructure project
+        b => b.MigrationsAssembly("CitasApp.Infrastructure")
     ));
 
-// Configure ASP.NET Core Identity services for login management
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
-    // Example password rules (Adjust these as you prefer)
     options.Password.RequireDigit = false;
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
@@ -42,29 +38,33 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<CitasDbContext>()
     .AddDefaultTokenProviders();
 
-// Configure Application Cookie settings for login redirects
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login"; // Where users are sent if not authenticated
+    options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
-/* ============================================================================ */
-
 
 /* ============================================================================
- * INYECCIÓN DE DEPENDENCIAS — Ports & Adapters
+ * DYNAMIC INYECCIÓN DE DEPENDENCIAS — Ports & Adapters
  * ============================================================================ */
-
-// Adapter JSON — lee datos desde archivos en /data
-builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
-builder.Services.AddScoped<IMedicoRepository, JsonMedicoRepository>();
-builder.Services.AddScoped<ICitaRepository, JsonCitaRepository>();
-
-// ============================================================================
+if (appEnv == "prod")
+{
+    // 🟢 PRODUCTION MODE: Pulls structural data dynamically via PostgreSQL ADO.NET Repositories
+    builder.Services.AddScoped<IPacienteRepository>(sp => new PostgresPacienteRepository(connectionString));
+    builder.Services.AddScoped<IMedicoRepository>(sp => new PostgresMedicoRepository(connectionString));
+    builder.Services.AddScoped<ICitaRepository>(sp => new PostgresCitaRepository(connectionString));
+}
+else
+{
+    // 🟡 DEVELOPMENT MODE: Fallback default reads local flat data out of /data JSON files
+    builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
+    builder.Services.AddScoped<IMedicoRepository, JsonMedicoRepository>();
+    builder.Services.AddScoped<ICitaRepository, JsonCitaRepository>();
+}
+/* ============================================================================ */
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -74,7 +74,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// 2. IMPORTANT CONFIGURATION ORDER: Authentication MUST come before Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 

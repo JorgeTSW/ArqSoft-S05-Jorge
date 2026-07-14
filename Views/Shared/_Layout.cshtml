@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -33,6 +36,31 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <!-- 🔐 Sección de Autenticación Dinámica -->
+                    <ul class="navbar-nav">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item d-flex align-items-center me-3">
+                                <span class="navbar-text text-dark fw-bold">¡Hola, @User.Identity?.Name!</span>
+                            </li>
+                            <li class="nav-item">
+                                <form class="form-inline" asp-controller="Cuenta" asp-action="Salir" method="post">
+                                    <button type="submit" class="nav-link btn btn-link text-danger border-0 py-0 m-0 align-baseline">Cerrar Sesión</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-controller="Cuenta" asp-action="Registro">Registrarse</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-primary ms-2" asp-controller="Cuenta" asp-action="Login">Iniciar Sesión</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>
