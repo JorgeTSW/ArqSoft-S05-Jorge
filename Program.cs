@@ -9,22 +9,47 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Load the .env file variables into the application context
 var appEnv = builder.Configuration["APP_ENVIRONMENT"]?.ToLower() ?? "dev";
+Console.WriteLine(appEnv);
 
-// Servicios de aplicación
-builder.Services.AddScoped<PacienteService>();
-builder.Services.AddScoped<MedicoService>();
-builder.Services.AddScoped<CitaService>();
+/* ============================================================================
+ * DYNAMIC INJECTION OF DEPENDENCIES — Ports & Adapters
+ * ============================================================================ */
+if (appEnv == "prod")
+{
+    // 🟢 PRODUCTION MODE: Pulls structural data dynamically via PostgreSQL ADO.NET Repositories
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    builder.Services.AddScoped<IPacienteRepository>(sp => new PostgresPacienteRepository(connectionString));
+    builder.Services.AddScoped<IMedicoRepository>(sp => new PostgresMedicoRepository(connectionString));
+    builder.Services.AddScoped<ICitaRepository>(sp => new PostgresCitaRepository(connectionString));
+}
+else
+{
+    // 🟡 DEVELOPMENT MODE: Fallback default reads local flat data out of /data JSON files
+    builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
+    builder.Services.AddScoped<IMedicoRepository, JsonMedicoRepository>();
+    builder.Services.AddScoped<ICitaRepository, JsonCitaRepository>();
+}
+
+// SERVICIOS DE APLICACIÓN: Ahora consumen las interfaces inyectadas dinámicamente arriba
+builder.Services.AddScoped<PacienteService>(sp =>
+    new PacienteService(sp.GetRequiredService<IPacienteRepository>()));
+
+builder.Services.AddScoped<MedicoService>(sp =>
+    new MedicoService(sp.GetRequiredService<IMedicoRepository>()));
+
+builder.Services.AddScoped<CitaService>(sp =>
+    new CitaService(sp.GetRequiredService<ICitaRepository>()));
 
 builder.Services.AddControllersWithViews();
 
 /* ============================================================================
  * DATABASES & IDENTITY INFRASTRUCTURE (PostgreSQL Setup)
  * ============================================================================ */
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+var mainConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CitasDbContext>(options =>
     options.UseNpgsql(
-        connectionString,
+        mainConnectionString,
         b => b.MigrationsAssembly("CitasApp.Infrastructure")
     ));
 
@@ -44,25 +69,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-/* ============================================================================
- * DYNAMIC INYECCIÓN DE DEPENDENCIAS — Ports & Adapters
- * ============================================================================ */
-if (appEnv == "prod")
-{
-    // 🟢 PRODUCTION MODE: Pulls structural data dynamically via PostgreSQL ADO.NET Repositories
-    builder.Services.AddScoped<IPacienteRepository>(sp => new PostgresPacienteRepository(connectionString));
-    builder.Services.AddScoped<IMedicoRepository>(sp => new PostgresMedicoRepository(connectionString));
-    builder.Services.AddScoped<ICitaRepository>(sp => new PostgresCitaRepository(connectionString));
-}
-else
-{
-    // 🟡 DEVELOPMENT MODE: Fallback default reads local flat data out of /data JSON files
-    builder.Services.AddScoped<IPacienteRepository, JsonPacienteRepository>();
-    builder.Services.AddScoped<IMedicoRepository, JsonMedicoRepository>();
-    builder.Services.AddScoped<ICitaRepository, JsonCitaRepository>();
-}
 /* ============================================================================ */
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
