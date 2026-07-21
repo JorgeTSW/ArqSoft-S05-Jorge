@@ -1,4 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<ItemGroup>
+	<Compile Remove="CitasApp.Api\**" />
+	<Compile Remove="CitasApp.Application\**" />
+	<Compile Remove="CitasApp.Domain\**" />
+	<Compile Remove="CitasApp.Infrastructure\**" />
+	<Compile Remove="CitasApp.xUnit\**" />
+
+	<Content Remove="CitasApp.Api\**" />
+	<Content Remove="CitasApp.Application\**" />
+	<Content Remove="CitasApp.Domain\**" />
+	<Content Remove="CitasApp.Infrastructure\**" />
+	<Content Remove="CitasApp.xUnit\**" />
+
+	<None Remove="CitasApp.Api\**" />
+	<None Remove="CitasApp.Application\**" />
+	<None Remove="CitasApp.Domain\**" />
+	<None Remove="CitasApp.Infrastructure\**" />
+	<None Remove="CitasApp.xUnit\**" />
+</ItemGroup>
+
+<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
