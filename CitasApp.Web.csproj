@@ -3,7 +3,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<!-- 🟢 AGREGA ESTA LÍNEA PARA PERMITIR LA COMPILACIÓN SIN INTERRUPCIONES DE ADVERTENCIAS -->
+		<!--AGREGA ESTA LÍNEA PARA PERMITIR LA COMPILACIÓN SIN INTERRUPCIONES DE ADVERTENCIAS -->
 		<NoWarn>$(NoWarn);NU1903</NoWarn>
 	</PropertyGroup>
 
