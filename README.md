@@ -1,7 +1,6 @@
 # CitasApp
 
 App de citas médicas construida con ASP.NET Core (.NET 10).
-(test)
 
 ## Arquitectura
 Hexagonal (Ports & Adapters) dividida en cinco proyectos:
