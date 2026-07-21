@@ -22,7 +22,7 @@ namespace CitasApp.Web.Controllers
 
         public IActionResult Index()
         {
-            // 1. Obtener el email del usuario logueado en Identity
+            // 1. Obtener el email del usuario logueado en Identity (prueba)
             var usuarioEmail = User.Identity?.Name;
 
             // Cargar los catálogos en el ViewBag para las vistas (combos, tablas, etc.)
